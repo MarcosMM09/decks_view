@@ -1,4 +1,4 @@
-package com.example.yugiohdeck.client
+package com.example.yugiohdeck.viewModel.client
 
 import com.example.yugiohdeck.model.ResponseService
 import io.ktor.client.HttpClient
@@ -35,7 +35,6 @@ class KtorClient {
             }
         }
 
-        // Realizar la solicitud HTTP
         val response: HttpResponse = client.get("https://db.ygoprodeck.com/api/v7/cardsets.php") {
             accept(ContentType.Application.Json)
         }
@@ -46,8 +45,6 @@ class KtorClient {
 
         // Cerrar el cliente después de usarlo
         client.close()
-
-        // Devolver la lista de ResponseService
         return responseList
     }
 }
