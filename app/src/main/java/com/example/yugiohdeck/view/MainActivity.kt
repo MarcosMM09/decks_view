@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -127,19 +129,26 @@ fun CardSetItem(cardSet: ResponseService) {
                 append(cardSet.num_of_cards.toChar())
             })
 
-            Spacer(modifier = Modifier.height(8.dp)) // Añadir un espaciado entre los textos y el botón
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Agregar el botón
             if (!buttonPressed) {
                 Button(
                     onClick = {
-                        buttonPressed = true // Cambiar el estado del botón
+                        buttonPressed = true
                     },
                 ) {
                     Text(text = "Agregar a favoritos")
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Agregado a favoritos")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(text = "Agregado a favoritos")
                 }
             }
         }
     }
 }
+
 
