@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "dataService")
-data class Data (@PrimaryKey(autoGenerate = true)
-                 val id: Int =0,
+data class Data (@PrimaryKey
+                 val id: Int,
                  val nombre: String,
                  val valor: String)

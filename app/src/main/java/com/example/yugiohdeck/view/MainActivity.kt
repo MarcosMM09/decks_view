@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,6 +44,7 @@ import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.view.ui.theme.TopBarUtils
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
+import com.example.yugiohdeck.viewModel.DataDao
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     MainScreen(context = this@MainActivity, cardSets = cardSets,
-                        showOptions = true, showButtonFavorites = true)
+                        showOptions = true, showButtonFavorites = true, dataCards)
                 }
             }
         }
@@ -84,8 +86,11 @@ fun MainScreen(
     context: Context,
     cardSets: List<ResponseService>,
     showOptions: Boolean,
-    showButtonFavorites: Boolean
+    showButtonFavorites: Boolean,
+    dataCards: DataDao
 ) {
+    // Lista mutable para almacenar los elementos seleccionados
+    val selectedItems = remember { mutableStateListOf<ResponseService>() }
     Scaffold(
         topBar = {
             TopBarUtils.TopAppBarContent(showOptions, context)
@@ -98,7 +103,14 @@ fun MainScreen(
         ) {
                 items(cardSets) { cardSet ->
                     CardSetItem(cardSet = cardSet, showButtonFavorites = showButtonFavorites, onAddToFavoritesClicked = { selectedCardSet ->
-                        println("los datos seleccionados son: $selectedCardSet")
+                        selectedItems.add(selectedCardSet)
+
+                        val gson = Gson()
+                        // Insertar el elemento seleccionado en la base de datos en un hilo secundario
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val data = Data(1, "response", gson.toJson(selectedItems))
+                            dataCards.insertOrUpdate(data)
+                        }
                     })
             }
         }

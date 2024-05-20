@@ -47,14 +47,14 @@ class FavoritesActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     MainScreen(cardSets = allCards, context = context,
-                        showOptions = false, showButtonFavorites = false)
+                        showOptions = false, showButtonFavorites = false, dataCards = dataCards)
                 }
             }
         }
     }
 
     fun getAllResponses(database: DataDao): List<ResponseService>{
-        val jsonString = database.obtenerTodos()[0].valor
+        val jsonString = database.obtenerTodos()[1].valor
         val listType = object : TypeToken<List<ResponseService>>() {}.type
         return  Gson().fromJson(jsonString, listType)
     }
