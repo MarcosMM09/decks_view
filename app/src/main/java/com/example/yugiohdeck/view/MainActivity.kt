@@ -1,6 +1,5 @@
 package com.example.yugiohdeck.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,16 +20,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,13 +38,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.view.ui.theme.TopBarUtils
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
-import com.example.yugiohdeck.viewModel.DataDao
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,38 +60,35 @@ class MainActivity : ComponentActivity() {
 
         val dataCards = db.mDataUser()
         enableEdgeToEdge()
-        setContent {
-            //MainScreen(context = this, dataCards = dataCards)
-        }
         // Ejecutar la lógica de inserción de la base de datos en un hilo de fondo
         CoroutineScope(Dispatchers.IO).launch {
             val cardSets = CardSetViewModel().fetchData()
-            val responseService: String = cardSets.toString()
-            val data = Data(3, "response", responseService)
-            dataCards.insertar(data)
+            val gson = Gson()
+            val data = Data( 0,"response", gson.toJson(cardSets))
+            dataCards.insertOrUpdate(data)
             println("los datos guardados son: ${dataCards.obtenerTodos()}")
 
             // Después de insertar en la base de datos, mostrar la pantalla principal
             withContext(Dispatchers.Main) {
                 setContent {
-                    MainScreen(context = this@MainActivity, cardSets = cardSets)
+                    MainScreen(context = this@MainActivity, cardSets = cardSets,
+                        showOptions = true, showButtonFavorites = true)
                 }
             }
         }
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun MainScreen(
     context: Context,
     cardSets: List<ResponseService>,
+    showOptions: Boolean,
+    showButtonFavorites: Boolean
 ) {
     Scaffold(
         topBar = {
-            TopBarUtils.TopAppBarContent(true, context)
+            TopBarUtils.TopAppBarContent(showOptions, context)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -105,7 +97,7 @@ fun MainScreen(
                 .padding(paddingValues)
         ) {
                 items(cardSets) { cardSet ->
-                    CardSetItem(cardSet = cardSet)
+                    CardSetItem(cardSet = cardSet, showButtonFavorites = showButtonFavorites)
             }
         }
     }
@@ -115,7 +107,7 @@ fun MainScreen(
 
 
 @Composable
-fun CardSetItem(cardSet: ResponseService) {
+fun CardSetItem(cardSet: ResponseService, showButtonFavorites: Boolean) {
     var buttonPressed by remember { mutableStateOf(false) }
 
     Card(
@@ -161,22 +153,23 @@ fun CardSetItem(cardSet: ResponseService) {
                 append(cardSet.num_of_cards.toChar())
             })
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Agregar el botón
-            if (!buttonPressed) {
-                Button(
-                    onClick = {
-                        buttonPressed = true
-                    },
-                ) {
-                    Text(text = "Agregar a favoritos")
-                }
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = "Agregado a favoritos")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Agregado a favoritos")
+            if (showButtonFavorites){
+                Spacer(modifier = Modifier.height(8.dp))
+                // Agregar el botón
+                if (!buttonPressed) {
+                    Button(
+                        onClick = {
+                            buttonPressed = true
+                        },
+                    ) {
+                        Text(text = "Agregar a favoritos")
+                    }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = "Agregado a favoritos")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "Agregado a favoritos")
+                    }
                 }
             }
         }

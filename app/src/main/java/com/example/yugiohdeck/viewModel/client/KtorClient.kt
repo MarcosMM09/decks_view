@@ -45,6 +45,7 @@ class KtorClient {
 
         // Cerrar el cliente después de usarlo
         client.close()
+        println(responseList)
         return responseList
     }
 }
