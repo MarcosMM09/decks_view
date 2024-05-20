@@ -97,7 +97,9 @@ fun MainScreen(
                 .padding(paddingValues)
         ) {
                 items(cardSets) { cardSet ->
-                    CardSetItem(cardSet = cardSet, showButtonFavorites = showButtonFavorites)
+                    CardSetItem(cardSet = cardSet, showButtonFavorites = showButtonFavorites, onAddToFavoritesClicked = { selectedCardSet ->
+                        println("los datos seleccionados son: $selectedCardSet")
+                    })
             }
         }
     }
@@ -107,7 +109,11 @@ fun MainScreen(
 
 
 @Composable
-fun CardSetItem(cardSet: ResponseService, showButtonFavorites: Boolean) {
+fun CardSetItem(
+    cardSet: ResponseService,
+    showButtonFavorites: Boolean,
+    onAddToFavoritesClicked: (ResponseService) -> Unit // Función de devolución de llamada
+) {
     var buttonPressed by remember { mutableStateOf(false) }
 
     Card(
@@ -160,6 +166,7 @@ fun CardSetItem(cardSet: ResponseService, showButtonFavorites: Boolean) {
                     Button(
                         onClick = {
                             buttonPressed = true
+                            onAddToFavoritesClicked(cardSet) // Llamar a la función de devolución de llamada con los datos del elemento de la lista
                         },
                     ) {
                         Text(text = "Agregar a favoritos")
@@ -175,5 +182,6 @@ fun CardSetItem(cardSet: ResponseService, showButtonFavorites: Boolean) {
         }
     }
 }
+
 
 
