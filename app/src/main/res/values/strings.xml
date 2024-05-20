@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Yugi Oh Deck</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
 </resources>
