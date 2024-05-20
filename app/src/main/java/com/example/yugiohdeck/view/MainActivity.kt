@@ -88,8 +88,6 @@ fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel(
         ) {
             if (error != null) {
                 item {
-                    // Muestra el mensaje de error si hay un error
-                    // Puedes utilizar un Snackbar, AlertDialog, Text, etc.
                     Text(
                         text = error!!,
                         modifier = Modifier
@@ -131,7 +129,7 @@ fun CardSetItem(cardSet: ResponseService) {
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(8.dp)) // Añadir un espaciado entre la imagen y el texto
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             Text(buildAnnotatedString {
@@ -153,7 +151,7 @@ fun CardSetItem(cardSet: ResponseService) {
                 append(cardSet.num_of_cards.toChar())
             })
 
-            Spacer(modifier = Modifier.height(8.dp)) // Añadir un espaciado entre los textos y el botón
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Agregar el botón
             if (!buttonPressed) {
