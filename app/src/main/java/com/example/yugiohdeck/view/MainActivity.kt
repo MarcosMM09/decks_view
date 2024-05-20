@@ -1,6 +1,7 @@
 package com.example.yugiohdeck.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,13 +26,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.model.ResponseService
+import com.example.yugiohdeck.view.ui.theme.TopBarUtils
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen()
+            MainScreen(context = this)
         }
     }
 }
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel() }) {
+fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel() }, context: Context) {
     val cardSets by cardSetViewModel.cardSets
     val error by cardSetViewModel.error
 
@@ -48,37 +50,9 @@ fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel(
         cardSetViewModel.fetchData()
     }
 
-    // Estado para controlar la visibilidad del menú flotante
-    var expanded by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Yugioh Card Sets",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        DropdownMenuItem(text = {
-                                                Text(text = "Favoritos")
-                        }, onClick = { /*TODO*/ })
-
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            TopBarUtils.TopAppBarContent(true, context)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -169,9 +143,3 @@ fun CardSetItem(cardSet: ResponseService) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MainScreen()
-}
