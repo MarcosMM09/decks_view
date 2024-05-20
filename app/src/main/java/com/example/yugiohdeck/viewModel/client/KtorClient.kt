@@ -2,8 +2,6 @@ package com.example.yugiohdeck.viewModel.client
 
 import com.example.yugiohdeck.model.ResponseService
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -11,14 +9,11 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+
 
 class KtorClient {
 
@@ -33,6 +28,7 @@ class KtorClient {
                     ignoreUnknownKeys = true // Para ignorar campos desconocidos en la respuesta
                 })
             }
+
         }
 
         val response: HttpResponse = client.get("https://db.ygoprodeck.com/api/v7/cardsets.php") {
@@ -47,4 +43,6 @@ class KtorClient {
         client.close()
         return responseList
     }
+
 }
+
