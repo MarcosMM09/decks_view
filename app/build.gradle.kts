@@ -86,4 +86,7 @@ dependencies {
     //dependencias de room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
+
+    //viewmodel compose
+    implementation(libs.androidx.lifecycle.viewmodel)
 }

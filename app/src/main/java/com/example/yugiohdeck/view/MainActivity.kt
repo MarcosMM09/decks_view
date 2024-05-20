@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,18 +40,48 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.view.ui.theme.TopBarUtils
 import com.example.yugiohdeck.viewModel.CardSetViewModel
+import com.example.yugiohdeck.viewModel.CardsDatabase
+import com.example.yugiohdeck.viewModel.DataDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            CardsDatabase::class.java, "yogi_oh_db"
+        ).build()
+
+        val dataCards = db.mDataUser()
         enableEdgeToEdge()
         setContent {
-            MainScreen(context = this)
+            //MainScreen(context = this, dataCards = dataCards)
+        }
+        // Ejecutar la lógica de inserción de la base de datos en un hilo de fondo
+        CoroutineScope(Dispatchers.IO).launch {
+            val cardSets = CardSetViewModel().fetchData()
+            val responseService: String = cardSets.toString()
+            val data = Data(3, "response", responseService)
+            dataCards.insertar(data)
+            println("los datos guardados son: ${dataCards.obtenerTodos()}")
+
+            // Después de insertar en la base de datos, mostrar la pantalla principal
+            withContext(Dispatchers.Main) {
+                setContent {
+                    MainScreen(context = this@MainActivity, cardSets = cardSets)
+                }
+            }
         }
     }
 }
@@ -59,14 +90,10 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel() }, context: Context) {
-    val cardSets by cardSetViewModel.cardSets
-    val error by cardSetViewModel.error
-
-    LaunchedEffect(key1 = Unit) {
-        cardSetViewModel.fetchData()
-    }
-
+fun MainScreen(
+    context: Context,
+    cardSets: List<ResponseService>,
+) {
     Scaffold(
         topBar = {
             TopBarUtils.TopAppBarContent(true, context)
@@ -77,25 +104,15 @@ fun MainScreen(cardSetViewModel: CardSetViewModel = remember { CardSetViewModel(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (error != null) {
-                item {
-                    // Muestra el mensaje de error si hay un error
-                    // Puedes utilizar un Snackbar, AlertDialog, Text, etc.
-                    Text(
-                        text = error!!,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
-                }
-            } else {
                 items(cardSets) { cardSet ->
                     CardSetItem(cardSet = cardSet)
-                }
             }
         }
     }
 }
+
+
+
 
 @Composable
 fun CardSetItem(cardSet: ResponseService) {
