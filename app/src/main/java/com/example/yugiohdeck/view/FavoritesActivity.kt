@@ -33,8 +33,6 @@ class FavoritesActivity : ComponentActivity() {
         val context = this
         CoroutineScope(Dispatchers.IO).launch {
             val allCards = getAllResponses(dataCards)
-            println("los datos de la db: $allCards")
-
             withContext(Dispatchers.Main) {
                 setContent {
                     MainScreen(cardSets = allCards, context = context,
@@ -45,9 +43,14 @@ class FavoritesActivity : ComponentActivity() {
     }
 
     fun getAllResponses(database: DataDao): List<ResponseService>{
-        val jsonString = database.obtenerTodos()[1].valor
-        val listType = object : TypeToken<List<ResponseService>>() {}.type
-        return  Gson().fromJson(jsonString, listType)
+        if (database.obtenerTodos().size > 1){
+            val jsonString = database.obtenerTodos()[1].valor
+            val listType = object : TypeToken<List<ResponseService>>() {}.type
+            return  Gson().fromJson(jsonString, listType)
+        } else{
+            val listEmpty: List<ResponseService> = emptyList()
+            return listEmpty
+        }
     }
 }
 
