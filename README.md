@@ -13,6 +13,7 @@ INSTRUCCIONES:
 
 ENLACE DE APK PARA PRUEBA:
 
+https://github.com/MarcosMM09/decks_view/releases
 
 
 EVIDENCIAS:
