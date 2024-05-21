@@ -2,6 +2,7 @@ package com.example.yugiohdeck.view
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -52,6 +53,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    private val selectedItems = mutableStateListOf<ResponseService>() // Mover la declaración fuera del onCreate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,19 +65,34 @@ class MainActivity : ComponentActivity() {
 
         val dataCards = db.mDataUser()
         enableEdgeToEdge()
+        val context = this
+
         // Ejecutar la lógica de inserción de la base de datos en un hilo de fondo
         CoroutineScope(Dispatchers.IO).launch {
-            val cardSets = CardSetViewModel().fetchData()
-            val gson = Gson()
-            val data = Data( 0,"response", gson.toJson(cardSets))
-            dataCards.insertOrUpdate(data)
-            println("los datos guardados son: ${dataCards.obtenerTodos()}")
+            val cardSets: List<ResponseService>
+            if (CardSetViewModel().isInternetAvailable(context)){
+                cardSets = CardSetViewModel().fetchData()
+                val gson = Gson()
+                val data = Data( 0,"response", gson.toJson(cardSets))
+                dataCards.insertOrUpdate(data)
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "App en modo sin conexion", Toast.LENGTH_LONG).show()
+                }
+                cardSets = CardSetViewModel().getResponseNotNetwork(dataCards)
+            }
 
             // Después de insertar en la base de datos, mostrar la pantalla principal
             withContext(Dispatchers.Main) {
                 setContent {
-                    MainScreen(context = this@MainActivity, cardSets = cardSets,
-                        showOptions = true, showButtonFavorites = true, dataCards)
+                    MainScreen(
+                        context = this@MainActivity,
+                        cardSets = cardSets,
+                        showOptions = true,
+                        showButtonFavorites = true,
+                        dataCards = dataCards,
+                        selectedItems = selectedItems // Pasar la lista como parámetro
+                    )
                 }
             }
         }
@@ -87,10 +105,9 @@ fun MainScreen(
     cardSets: List<ResponseService>,
     showOptions: Boolean,
     showButtonFavorites: Boolean,
-    dataCards: DataDao
+    dataCards: DataDao,
+    selectedItems: MutableList<ResponseService> // Añadir la lista como parámetro
 ) {
-    // Lista mutable para almacenar los elementos seleccionados
-    val selectedItems = remember { mutableStateListOf<ResponseService>() }
     Scaffold(
         topBar = {
             TopBarUtils.TopAppBarContent(showOptions, context)
@@ -101,8 +118,11 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-                items(cardSets) { cardSet ->
-                    CardSetItem(cardSet = cardSet, showButtonFavorites = showButtonFavorites, onAddToFavoritesClicked = { selectedCardSet ->
+            items(cardSets) { cardSet ->
+                CardSetItem(
+                    cardSet = cardSet,
+                    showButtonFavorites = showButtonFavorites,
+                    onAddToFavoritesClicked = { selectedCardSet ->
                         selectedItems.add(selectedCardSet)
 
                         val gson = Gson()
@@ -111,7 +131,8 @@ fun MainScreen(
                             val data = Data(1, "response", gson.toJson(selectedItems))
                             dataCards.insertOrUpdate(data)
                         }
-                    })
+                    }
+                )
             }
         }
     }
@@ -124,8 +145,9 @@ fun MainScreen(
 fun CardSetItem(
     cardSet: ResponseService,
     showButtonFavorites: Boolean,
-    onAddToFavoritesClicked: (ResponseService) -> Unit // Función de devolución de llamada
+    onAddToFavoritesClicked: (ResponseService) -> Unit
 ) {
+    // Recordar el estado del botón
     var buttonPressed by remember { mutableStateOf(false) }
 
     Card(
@@ -178,7 +200,7 @@ fun CardSetItem(
                     Button(
                         onClick = {
                             buttonPressed = true
-                            onAddToFavoritesClicked(cardSet) // Llamar a la función de devolución de llamada con los datos del elemento de la lista
+                            onAddToFavoritesClicked(cardSet) // Llamar al callback cuando se hace clic en el botón
                         },
                     ) {
                         Text(text = "Agregar a favoritos")
@@ -194,6 +216,7 @@ fun CardSetItem(
         }
     }
 }
+
 
 
 

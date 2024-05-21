@@ -1,11 +1,17 @@
 package com.example.yugiohdeck.viewModel
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yugiohdeck.viewModel.client.KtorClient
 import com.example.yugiohdeck.model.ResponseService
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,5 +38,23 @@ class CardSetViewModel: ViewModel() {
                 emptyList() // Devolver una lista vacía en caso de error
             }
         }
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    }
+
+    fun getResponseNotNetwork(database: DataDao): List<ResponseService>{
+        val jsonString = database.obtenerTodos()[0].valor
+        val listType = object : TypeToken<List<ResponseService>>() {}.type
+        return  Gson().fromJson(jsonString, listType)
     }
 }

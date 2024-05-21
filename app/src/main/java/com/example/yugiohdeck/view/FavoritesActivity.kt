@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.mutableStateListOf
 import androidx.room.Room
 import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.viewModel.CardsDatabase
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class FavoritesActivity : ComponentActivity() {
+
+    private val selectedItems = mutableStateListOf<ResponseService>()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,7 @@ class FavoritesActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 setContent {
                     MainScreen(cardSets = allCards, context = context,
-                        showOptions = false, showButtonFavorites = false, dataCards = dataCards)
+                        showOptions = false, showButtonFavorites = false, dataCards = dataCards, selectedItems = selectedItems)
                 }
             }
         }
