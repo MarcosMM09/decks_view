@@ -42,7 +42,7 @@ import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
-import com.example.yugiohdeck.view.ui.theme.TopBarUtils
+import com.example.yugiohdeck.view.ui.theme.Components
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
 import com.example.yugiohdeck.viewModel.DataDao
@@ -110,7 +110,7 @@ fun MainScreen(
 ) {
     Scaffold(
         topBar = {
-            TopBarUtils.TopAppBarContent(showOptions, context)
+            Components.TopAppBarContent(showOptions, context)
         }
     ) { paddingValues ->
         LazyColumn(
