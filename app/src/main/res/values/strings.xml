@@ -12,4 +12,5 @@
     <string name="card_numbers">Numero de tarjetas.- </string>
     <string name="select_to_favorites">Agregar a favoritos</string>
     <string name="selected_to_favorites">Agregado a la lista de favoritos</string>
+    <string name="title_button_favorites">Ir a favoritos</string>
 </resources>

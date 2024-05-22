@@ -7,65 +7,24 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.traceEventEnd
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.view.ui.theme.Components
-import com.example.yugiohdeck.view.ui.theme.DarkColor
-import com.example.yugiohdeck.view.ui.theme.OrangeBorderColor
-import com.example.yugiohdeck.view.ui.theme.Styles
-import com.example.yugiohdeck.view.ui.theme.WhiteColor
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
 import com.example.yugiohdeck.viewModel.DataDao
@@ -78,11 +37,12 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     private val selectedItems = mutableStateListOf<ResponseService>()
     private lateinit var cardSets: List<ResponseService>
-    private lateinit var dataCards: DataDao// Mover la declaración fuera del onCreate
+    private lateinit var dataCards: DataDao
+    private lateinit var gson: Gson
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        gson = Gson()
         val db = Room.databaseBuilder(
             applicationContext,
             CardsDatabase::class.java, getString(R.string.db_name)
@@ -109,11 +69,7 @@ class MainActivity : ComponentActivity() {
             // Después de insertar en la base de datos, mostrar la pantalla principal
             withContext(Dispatchers.Main) {
                 setContent {
-                    MainScreen(
-                        context = this@MainActivity,
-                        cardSets = cardSets,
-                        dataCards = dataCards,
-                        selectedItems = selectedItems // Pasar la lista como parámetro
+                    MainScreen(context = this@MainActivity, cardSets = cardSets, dataCards = dataCards, gson
                     )
                 }
             }
@@ -126,18 +82,14 @@ fun MainScreen(
     context: Context,
     cardSets: List<ResponseService>,
     dataCards: DataDao,
-    selectedItems: MutableList<ResponseService> // Añadir la lista como parámetro
+    gson: Gson// Añadir la lista como parámetro
 ) {
-    val textModifiers = listOf(
-        Modifier.fillMaxWidth(),
-        Modifier.padding(16.dp)
-    )
     Scaffold(
         topBar = {
             Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_main), color = Color.Red)
         },
         floatingActionButton = {
-            Components().FloatingButton(icon = Icons.Filled.Star, text = "ir a favoritos", onClick = {
+            Components().FloatingButton(icon = Icons.Filled.Star, text = stringResource(id = R.string.title_button_favorites), color = Color.Yellow, onClick = {
                 val intent = Intent(context, FavoritesActivity::class.java)
                 context.startActivity(intent)
             })
@@ -148,108 +100,17 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            items(cardSets) { cardSet ->
-                CardSetItem(
-                    cardSet = cardSet,
-                    showButtonFavorites = true,
-                    onAddToFavoritesClicked = { selectedCardSet ->
-                        selectedItems.add(selectedCardSet)
-
-                        val gson = Gson()
+            items(cardSets){ cardSets ->
+                val imageUrl = cardSets.set_image
+                val painter = rememberAsyncImagePainter(model = imageUrl)
+                if (imageUrl != null)
+                    Components().CardViewInfo(painter = painter, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
                         // Insertar el elemento seleccionado en la base de datos en un hilo secundario
                         CoroutineScope(Dispatchers.IO).launch {
-                            val data = Data(1, "response", gson.toJson(selectedItems))
+                            val data = Data(1, "response", gson.toJson(it))
                             dataCards.insertOrUpdate(data)
                         }
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-
-
-@Composable
-fun CardSetItem(
-    cardSet: ResponseService,
-    showButtonFavorites: Boolean,
-    onAddToFavoritesClicked: (ResponseService) -> Unit
-) {
-    // Recordar el estado del botón
-    var buttonPressed by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkColor)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
-            val imageUrl = cardSet.set_image
-            val painter = rememberAsyncImagePainter(model = imageUrl)
-
-            if (imageUrl != null){
-                Image(
-                    painter = painter,
-                    contentDescription = "Set Image",
-                    modifier = Modifier
-                        .height(200.dp)
-                        .width(200.dp),
-                    contentScale = ContentScale.Fit,
-                    alignment = Alignment.Center
-                )
-
-                Spacer(modifier = Modifier.height(8.dp)) // Añadir un espaciado entre la imagen y el texto
-            }
-
-            Text(buildAnnotatedString {
-                withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append(stringResource(id = R.string.card_name))
-                }
-                withStyle(style = Styles.DataStyle.dataWhite){
-                    append(cardSet.set_name)
-                }
-            })
-            Text(buildAnnotatedString {
-                withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append(stringResource(id = R.string.card_code))
-                }
-                withStyle(style = Styles.DataStyle.dataWhite){
-                    append(cardSet.set_code)
-                }
-            })
-            Text(buildAnnotatedString {
-                withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append(stringResource(id = R.string.card_numbers))
-                }
-                withStyle(style = Styles.DataStyle.dataWhite){
-                    append(cardSet.num_of_cards.toString())
-                }
-            })
-
-            if (showButtonFavorites){
-                Spacer(modifier = Modifier.height(8.dp))
-                // Agregar el botón
-                if (!buttonPressed) {
-                    Button(
-                        onClick = {
-                            buttonPressed = true
-                            onAddToFavoritesClicked(cardSet) // Llamar al callback cuando se hace clic en el botón
-                        },
-                    ) {
-                        Text(text = stringResource(id = R.string.select_to_favorites))
-                    }
-                } else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = stringResource(id = R.string.selected_to_favorites), tint = Color.White)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = stringResource(id = R.string.selected_to_favorites), color = Color.White)
-                    }
-                }
+                    })
             }
         }
     }
