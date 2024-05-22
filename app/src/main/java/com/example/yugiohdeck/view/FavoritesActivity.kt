@@ -6,8 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.res.stringResource
 import androidx.room.Room
+import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.ResponseService
+import com.example.yugiohdeck.view.ui.theme.Components
 import com.example.yugiohdeck.viewModel.CardsDatabase
 import com.example.yugiohdeck.viewModel.DataDao
 import com.google.gson.Gson
@@ -35,8 +38,7 @@ class FavoritesActivity : ComponentActivity() {
             val allCards = getAllResponses(dataCards)
             withContext(Dispatchers.Main) {
                 setContent {
-                    MainScreen(cardSets = allCards, context = context,
-                        showOptions = false, showButtonFavorites = false, dataCards = dataCards, selectedItems = selectedItems)
+                    Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_favorites))
                 }
             }
         }

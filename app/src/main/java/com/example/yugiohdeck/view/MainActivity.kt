@@ -1,6 +1,7 @@
 package com.example.yugiohdeck.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -23,10 +24,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +41,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -106,8 +112,6 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         context = this@MainActivity,
                         cardSets = cardSets,
-                        showOptions = true,
-                        showButtonFavorites = true,
                         dataCards = dataCards,
                         selectedItems = selectedItems // Pasar la lista como parámetro
                     )
@@ -121,14 +125,22 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     context: Context,
     cardSets: List<ResponseService>,
-    showOptions: Boolean,
-    showButtonFavorites: Boolean,
     dataCards: DataDao,
     selectedItems: MutableList<ResponseService> // Añadir la lista como parámetro
 ) {
+    val textModifiers = listOf(
+        Modifier.fillMaxWidth(),
+        Modifier.padding(16.dp)
+    )
     Scaffold(
         topBar = {
-            Components.TopAppBarContent(showOptions, context)
+            Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_main), color = Color.Red)
+        },
+        floatingActionButton = {
+            Components().FloatingButton(icon = Icons.Filled.Star, text = "ir a favoritos", onClick = {
+                val intent = Intent(context, FavoritesActivity::class.java)
+                context.startActivity(intent)
+            })
         }
     ) { paddingValues ->
         LazyColumn(
@@ -139,7 +151,7 @@ fun MainScreen(
             items(cardSets) { cardSet ->
                 CardSetItem(
                     cardSet = cardSet,
-                    showButtonFavorites = showButtonFavorites,
+                    showButtonFavorites = true,
                     onAddToFavoritesClicked = { selectedCardSet ->
                         selectedItems.add(selectedCardSet)
 
@@ -233,9 +245,9 @@ fun CardSetItem(
                     }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = stringResource(id = R.string.selected_to_favorites))
+                        Icon(Icons.Default.CheckCircle, contentDescription = stringResource(id = R.string.selected_to_favorites), tint = Color.White)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = stringResource(id = R.string.selected_to_favorites))
+                        Text(text = stringResource(id = R.string.selected_to_favorites), color = Color.White)
                     }
                 }
             }
