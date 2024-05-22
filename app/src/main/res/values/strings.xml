@@ -4,4 +4,12 @@
 
     <string name="title_topbar_main">Yugi Oh! All Cards</string>
     <string name="title_topbar_favorites">Yugi Oh! Favorites Cards</string>
+    <string name="db_name">yugi_oh_db</string>
+    <string name="save_response">response</string>
+    <string name="app_mode_offline">App en modo sin conexion</string>
+    <string name="card_name">Nombre de la tarjeta.- </string>
+    <string name="card_code">Codigo de la tarjeta.- </string>
+    <string name="card_numbers">Numero de tarjetas.- </string>
+    <string name="select_to_favorites">Agregar a favoritos</string>
+    <string name="selected_to_favorites">Agregado a la lista de favoritos</string>
 </resources>

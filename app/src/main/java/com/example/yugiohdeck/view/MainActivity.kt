@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +79,7 @@ class MainActivity : ComponentActivity() {
 
         val db = Room.databaseBuilder(
             applicationContext,
-            CardsDatabase::class.java, "yogi_oh_db"
+            CardsDatabase::class.java, getString(R.string.db_name)
         ).build()
 
         dataCards = db.mDataUser()
@@ -90,11 +91,11 @@ class MainActivity : ComponentActivity() {
             if (CardSetViewModel().isInternetAvailable(context)){
                 cardSets = CardSetViewModel().fetchData()
                 val gson = Gson()
-                val data = Data( 0,"response", gson.toJson(cardSets))
+                val data = Data( 0,getString(R.string.save_response), gson.toJson(cardSets))
                 dataCards.insertOrUpdate(data)
             } else {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, "App en modo sin conexion", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, getString(R.string.app_mode_offline), Toast.LENGTH_LONG).show()
                 }
                 cardSets = CardSetViewModel().getResponseNotNetwork(dataCards)
             }
@@ -111,36 +112,6 @@ class MainActivity : ComponentActivity() {
                         selectedItems = selectedItems // Pasar la lista como parámetro
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun Cardview(){
-    Box(
-        modifier = Modifier
-            .padding(16.dp)
-            .border(2.dp, OrangeBorderColor, shape = RectangleShape)
-            // Padding entre el borde y el Card
-            .fillMaxWidth()
-    ){
-        Card(
-            colors = CardDefaults.cardColors(containerColor = DarkColor),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(1.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Nombre de la tarjeta",
-                    color = WhiteColor,
-                    modifier = Modifier.size(20.dp)
-                )
-                Text(
-                    text = "texto nuevo",
-                    color = WhiteColor
-                )
             }
         }
     }
@@ -225,7 +196,7 @@ fun CardSetItem(
 
             Text(buildAnnotatedString {
                 withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append("Nombre de tarjeta.- ")
+                    append(stringResource(id = R.string.card_name))
                 }
                 withStyle(style = Styles.DataStyle.dataWhite){
                     append(cardSet.set_name)
@@ -233,7 +204,7 @@ fun CardSetItem(
             })
             Text(buildAnnotatedString {
                 withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append("Codigo de tarjeta.- ")
+                    append(stringResource(id = R.string.card_code))
                 }
                 withStyle(style = Styles.DataStyle.dataWhite){
                     append(cardSet.set_code)
@@ -241,7 +212,7 @@ fun CardSetItem(
             })
             Text(buildAnnotatedString {
                 withStyle(style = Styles.ParamsStyle.paramsWhite){
-                    append("Numero de tarjetas.- ")
+                    append(stringResource(id = R.string.card_numbers))
                 }
                 withStyle(style = Styles.DataStyle.dataWhite){
                     append(cardSet.num_of_cards.toString())
@@ -258,13 +229,13 @@ fun CardSetItem(
                             onAddToFavoritesClicked(cardSet) // Llamar al callback cuando se hace clic en el botón
                         },
                     ) {
-                        Text(text = "Agregar a favoritos")
+                        Text(text = stringResource(id = R.string.select_to_favorites))
                     }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = "Agregado a favoritos")
+                        Icon(Icons.Default.CheckCircle, contentDescription = stringResource(id = R.string.selected_to_favorites))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "Agregado a favoritos")
+                        Text(text = stringResource(id = R.string.selected_to_favorites))
                     }
                 }
             }
