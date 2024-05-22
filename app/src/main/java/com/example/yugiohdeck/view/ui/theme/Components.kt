@@ -2,10 +2,13 @@ package com.example.yugiohdeck.view.ui.theme
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,9 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.yugiohdeck.R
 import com.example.yugiohdeck.view.FavoritesActivity
 
 class Components {
@@ -32,9 +38,9 @@ class Components {
             // Estado para controlar la visibilidad del menú flotante
             var expanded by remember { mutableStateOf(false) }
             val title: String = if (showOptions)
-                "Yugi Oh! All Cards"
+                stringResource(id = R.string.title_topbar_main)
             else
-                "Yugi Oh! Favorites Cards"
+                stringResource(id = R.string.title_topbar_favorites)
             TopAppBar(
                 title = {
                     Text(
@@ -68,5 +74,7 @@ class Components {
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+
     }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Yugi Oh Deck</string>
     <string name="title_activity_favorites">FavoritesActivity</string>
+
+    <string name="title_topbar_main">Yugi Oh! All Cards</string>
+    <string name="title_topbar_favorites">Yugi Oh! Favorites Cards</string>
 </resources>
