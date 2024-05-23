@@ -57,4 +57,15 @@ class CardSetViewModel: ViewModel() {
         val listType = object : TypeToken<List<ResponseService>>() {}.type
         return  Gson().fromJson(jsonString, listType)
     }
+
+    fun getAllResponses(database: DataDao): List<ResponseService>{
+        if (database.obtenerTodos().size > 1){
+            val jsonString = database.obtenerTodos()[1].valor
+            val listType = object : TypeToken<List<ResponseService>>() {}.type
+            return  Gson().fromJson(jsonString, listType)
+        } else{
+            val listEmpty: List<ResponseService> = emptyList()
+            return listEmpty
+        }
+    }
 }

@@ -35,7 +35,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
-    private val selectedItems = mutableStateListOf<ResponseService>()
     private lateinit var cardSets: List<ResponseService>
     private lateinit var dataCards: DataDao
     private lateinit var gson: Gson
@@ -82,8 +81,9 @@ fun MainScreen(
     context: Context,
     cardSets: List<ResponseService>,
     dataCards: DataDao,
-    gson: Gson// Añadir la lista como parámetro
+    gson: Gson
 ) {
+    val favoriteList: MutableList<ResponseService> = mutableListOf()
     Scaffold(
         topBar = {
             Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_main), color = Color.Red)
@@ -105,10 +105,13 @@ fun MainScreen(
                 val painter = rememberAsyncImagePainter(model = imageUrl)
                 if (imageUrl != null)
                     Components().CardViewInfo(painter = painter, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
+                        favoriteList.add(it)
                         // Insertar el elemento seleccionado en la base de datos en un hilo secundario
                         CoroutineScope(Dispatchers.IO).launch {
-                            val data = Data(1, "response", gson.toJson(it))
+                            val data = Data(1, "response", gson.toJson(favoriteList))
                             dataCards.insertOrUpdate(data)
+                            println("el tamaño es ${dataCards.obtenerTodos().size}")
+                            println("se inserto ${dataCards.obtenerTodos().get(1)}")
                         }
                     })
             }
