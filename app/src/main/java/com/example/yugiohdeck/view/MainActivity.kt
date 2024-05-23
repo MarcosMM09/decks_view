@@ -42,11 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         gson = Gson()
-        val db = Room.databaseBuilder(
-            applicationContext,
-            CardsDatabase::class.java, getString(R.string.db_name)
-        ).build()
-
+        val db = Room.databaseBuilder(applicationContext, CardsDatabase::class.java, getString(R.string.db_name)).build()
         dataCards = db.mDataUser()
         enableEdgeToEdge()
         val context = this

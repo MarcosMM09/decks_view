@@ -124,10 +124,10 @@ class Components {
                     Spacer(modifier = Modifier.height(8.dp))
                     // Agregar el botón
                     if (!buttonPressed) {
-                        ButtonToAdd {
+                        ButtonToAdd(onClickButton = {
                             buttonPressed = true
                             onAddToFavoritesClicked(cardSet)
-                        }
+                        })
                     } else {
                         TextFromButtonClick()
                     }
@@ -137,21 +137,21 @@ class Components {
     }
 
     @Composable
-    fun ButtonToAdd(onClickButton: () -> Unit){
+    fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites)){
         Button(
             onClick = onClickButton,
         ) {
-            Text(text = stringResource(id = R.string.select_to_favorites))
+            Text(text = text)
         }
     }
 
     @Composable
-    fun TextFromButtonClick(){
+    fun TextFromButtonClick(text: String = stringResource(id = R.string.selected_to_favorites)){
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.CheckCircle, contentDescription = stringResource(id = R.string.selected_to_favorites), tint = Color.White)
+            Icon(Icons.Default.CheckCircle, contentDescription = text, tint = Color.White)
             Spacer(modifier = Modifier.width(4.dp))
-            Text(text = stringResource(id = R.string.selected_to_favorites), color = Color.White)
+            Text(text = text, color = Color.White)
         }
     }
 }
