@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,6 +34,7 @@ import kotlinx.coroutines.withContext
 class FavoritesActivity : ComponentActivity() {
 
     private lateinit var dataCards: DataDao
+    private val vm: CardSetViewModel by viewModels()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +46,7 @@ class FavoritesActivity : ComponentActivity() {
 
         dataCards = db.mDataUser()
         CoroutineScope(Dispatchers.IO).launch {
-            val allCards = CardSetViewModel().getAllResponses(dataCards)
+            val allCards = vm.getAllResponses(dataCards)
             withContext(Dispatchers.Main) {
                 setContent {
                    FavoritesScreen(cardSets = allCards)
