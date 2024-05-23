@@ -89,4 +89,7 @@ dependencies {
 
     //viewmodel compose
     implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.google.dagger)
+    kapt(libs.google.dagger.kapt)
 }
