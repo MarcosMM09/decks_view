@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
@@ -62,7 +63,7 @@ class FavoritesActivity : ComponentActivity() {
     ){
         Scaffold(
             topBar = {
-                Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_favorites))
+                Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_favorites), color = Color.Red)
             }
         ) { paddingValues ->
             LazyColumn(
