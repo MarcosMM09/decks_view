@@ -53,9 +53,15 @@ class CardSetViewModel: ViewModel() {
     }
 
     fun getResponseNotNetwork(database: DataDao): List<ResponseService>{
-        val jsonString = database.obtenerTodos()[0].valor
-        val listType = object : TypeToken<List<ResponseService>>() {}.type
-        return  Gson().fromJson(jsonString, listType)
+        if(database.obtenerTodos().isNotEmpty()){
+            val jsonString = database.obtenerTodos()[0].valor
+            val listType = object : TypeToken<List<ResponseService>>() {}.type
+            return  Gson().fromJson(jsonString, listType)
+        } else {
+            val listEmpty: List<ResponseService> = emptyList()
+            return listEmpty
+        }
+
     }
 
     fun getAllResponses(database: DataDao): List<ResponseService>{
