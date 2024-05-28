@@ -1,8 +1,8 @@
 package com.example.yugiohdeck.view.ui.theme
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,24 +11,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,13 +40,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.ResponseService
-import com.example.yugiohdeck.view.FavoritesActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +61,7 @@ fun SimpleTopBar(title: String,align: TextAlign = TextAlign.Center, fontWeight: 
         .fillMaxWidth()
         .statusBarsPadding()
         .padding(start = paddingStart, end = paddingEnd)
-        .shadow(elevation = 10.dp, shape = RectangleShape),
+        .shadow(elevation = 10.dp, shape = RectangleShape)
     )
 }
 
@@ -90,6 +81,7 @@ fun CardViewInfo(
     painter: AsyncImagePainter,
     cardSet: ResponseService,
     showButton: Boolean = false,
+    buttonColor: Color = OrangeBorderColor,
     textAfterClickButton: String = stringResource(id = R.string.selected_to_favorites),
     onAddToFavoritesClicked: (ResponseService) -> Unit
 ) {
@@ -97,7 +89,8 @@ fun CardViewInfo(
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .border(width = 4.dp, color = OrangeBorderColor, shape = Shapes().medium),
         colors = CardDefaults.cardColors(containerColor = color)
     ) {
         Row(
@@ -139,7 +132,7 @@ fun CardViewInfo(
                         ButtonToAdd(onClickButton = {
                             buttonPressed = true
                             onAddToFavoritesClicked(cardSet)
-                        })
+                        }, buttonColor = buttonColor)
                     } else {
                         TextFromButtonClick(text = textAfterClickButton)
                     }
@@ -162,7 +155,7 @@ fun CardViewInfo(
 
 
 @Composable
-fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites)){
+fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites), buttonColor: Color = BlueDarkColor){
     Button(
         onClick = onClickButton,
     ) {

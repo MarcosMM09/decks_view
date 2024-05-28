@@ -1,6 +1,5 @@
 package com.example.yugiohdeck.view
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,21 +11,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import com.example.yugiohdeck.R
-import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
-import com.example.yugiohdeck.view.ui.theme.Components
+import com.example.yugiohdeck.view.ui.theme.CardViewInfo
+import com.example.yugiohdeck.view.ui.theme.SimpleTopBar
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
 import com.example.yugiohdeck.viewModel.DataDao
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +57,7 @@ class FavoritesActivity : ComponentActivity() {
     ){
         Scaffold(
             topBar = {
-                Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_favorites), color = Color.Red)
+                SimpleTopBar(title = stringResource(id = R.string.title_topbar_favorites), color = Color.Red)
             }
         ) { paddingValues ->
             LazyColumn(
@@ -73,7 +69,7 @@ class FavoritesActivity : ComponentActivity() {
                     val imageUrl = cardSets.set_image
                     val painter = rememberAsyncImagePainter(model = imageUrl)
                     if (imageUrl != null)
-                        Components().CardViewInfo(painter = painter, cardSet = cardSets,showButton = false, onAddToFavoritesClicked = {
+                        CardViewInfo(painter = painter, cardSet = cardSets,showButton = false, onAddToFavoritesClicked = {
                         })
                 }
             }

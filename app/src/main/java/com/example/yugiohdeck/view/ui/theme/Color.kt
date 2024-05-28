@@ -12,4 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val BlueDarkColor = Color(0xFF1A237E)
 val WhiteColor = Color(0xFFFAFAFA)
-val OrangeBorderColor = Color(0xFFFFA500) 
+val OrangeBorderColor = Color(0xFFFFA500)
+val BlueLightColor = Color(0xFFB3E5FC)

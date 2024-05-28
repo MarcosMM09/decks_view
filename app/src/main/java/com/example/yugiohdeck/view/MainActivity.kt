@@ -9,29 +9,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
+import com.example.yugiohdeck.view.ui.theme.BlueLightColor
 import com.example.yugiohdeck.view.ui.theme.CardViewInfo
 import com.example.yugiohdeck.view.ui.theme.FloatingButton
 import com.example.yugiohdeck.view.ui.theme.SimpleTopBar
@@ -60,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
         // Ejecutar la lógica de inserción de la base de datos en un hilo de fondo
         CoroutineScope(Dispatchers.IO).launch {
-            if (CardSetViewModel().isInternetAvailable(context)){
+            if (vm.isInternetAvailable(context)){
                 cardSets = vm.fetchData()
                 val gson = Gson()
                 val data = Data( 0,getString(R.string.save_response), gson.toJson(cardSets))
@@ -74,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
             // Después de insertar en la base de datos, mostrar la pantalla principal
             withContext(Dispatchers.Main) {
-                setContent {
+                setContent{
                     MainScreen(context = this@MainActivity, cardSets = cardSets, dataCards = dataCards, gson
                     )
                 }
@@ -111,7 +110,8 @@ fun MainScreen(
                 val imageUrl = cardSets.set_image
                 val painter = rememberAsyncImagePainter(model = imageUrl)
                 if (imageUrl != null)
-                    CardViewInfo(painter = painter, color = Color.Black, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
+                    CardViewInfo(painter = painter, color = Color.Black, cardSet = cardSets,showButton = true,
+                        onAddToFavoritesClicked = {
                         favoriteList.add(it)
                         // Insertar el elemento seleccionado en la base de datos en un hilo secundario
                         CoroutineScope(Dispatchers.IO).launch {
@@ -131,13 +131,13 @@ fun MainScreen(
 @Composable
 fun ViewTopbar(){
     Scaffold {
-        LazyRow(
-
-        ) {
-            item {
-                FloatingButton(icon = Icons.Filled.Star, color = Color.White, text = "Agregar a favoritos") {
-                }
+        Box(modifier = Modifier.padding(12.dp)){
+            Column {
+                SimpleTopBar(title = "nuevo texto")
+                FloatingButton(icon = Icons.Filled.Star, color = Color.White, text = "Agregar", onClick = {
+                })
             }
+
         }
     }
 }
