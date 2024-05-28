@@ -36,7 +36,6 @@ class FavoritesActivity : ComponentActivity() {
 
     private lateinit var dataCards: DataDao
     private val vm: CardSetViewModel by viewModels()
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,7 +55,6 @@ class FavoritesActivity : ComponentActivity() {
         }
     }
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun FavoritesScreen(
         cardSets: List<ResponseService>,

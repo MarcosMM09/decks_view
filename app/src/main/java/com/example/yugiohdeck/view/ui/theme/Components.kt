@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -34,8 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -44,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import com.example.yugiohdeck.R
@@ -53,7 +58,8 @@ import com.example.yugiohdeck.view.FavoritesActivity
 class Components {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SimpleTopBar(title: String,align: TextAlign = TextAlign.Center, fontWeight: FontWeight = FontWeight.Bold, color: Color = Color.Black){
+    fun SimpleTopBar(title: String,align: TextAlign = TextAlign.Center, fontWeight: FontWeight = FontWeight.Bold, color: Color = Color.Black,
+                     paddingStart: Dp = 3.dp, paddingEnd: Dp = 3.dp){
         TopAppBar(title = {
             Text(text = title,
                 textAlign = align,
@@ -61,7 +67,11 @@ class Components {
                 fontWeight = fontWeight,
                 color = color
             )
-        }, modifier = Modifier.fillMaxWidth())
+        }, modifier = Modifier.fillMaxWidth()
+            .statusBarsPadding()
+            .padding(start = paddingStart, end = paddingEnd)
+            .shadow(elevation = 10.dp, shape = RectangleShape),
+        )
     }
 
     @Composable
@@ -75,66 +85,80 @@ class Components {
     }
 
     @Composable
-    fun CardViewInfo(color: Color = BlueDarkColor, painter: AsyncImagePainter, cardSet: ResponseService,
-                     showButton:Boolean = false,onAddToFavoritesClicked: (ResponseService) -> Unit){
+    fun CardViewInfo(
+        color: Color = BlueDarkColor,
+        painter: AsyncImagePainter,
+        cardSet: ResponseService,
+        showButton: Boolean = false,
+        onAddToFavoritesClicked: (ResponseService) -> Unit
+    ) {
         var buttonPressed by remember { mutableStateOf(false) }
-        Card( modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = color)
         ) {
-            Column(
+            Row(
                 modifier = Modifier.padding(16.dp),
-            ){
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp) // Separar las columnas un poco
+                ) {
+                    Text(buildAnnotatedString {
+                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                            append(stringResource(id = R.string.card_name))
+                        }
+                        withStyle(style = Styles.DataStyle.dataWhite) {
+                            append(cardSet.set_name)
+                        }
+                    })
+                    Text(buildAnnotatedString {
+                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                            append(stringResource(id = R.string.card_code))
+                        }
+                        withStyle(style = Styles.DataStyle.dataWhite) {
+                            append(cardSet.set_code)
+                        }
+                    })
+                    Text(buildAnnotatedString {
+                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                            append(stringResource(id = R.string.card_numbers))
+                        }
+                        withStyle(style = Styles.DataStyle.dataWhite) {
+                            append(cardSet.num_of_cards.toString())
+                        }
+                    })
+
+                    if (showButton) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (!buttonPressed) {
+                            ButtonToAdd(onClickButton = {
+                                buttonPressed = true
+                                onAddToFavoritesClicked(cardSet)
+                            })
+                        } else {
+                            TextFromButtonClick()
+                        }
+                    }
+                }
+
                 Image(
                     painter = painter,
                     contentDescription = "Set Image",
                     modifier = Modifier
                         .height(200.dp)
-                        .width(200.dp),
+                        .width(200.dp)
+                        .weight(1f),
                     contentScale = ContentScale.Fit,
                     alignment = Alignment.Center
                 )
-                Text(buildAnnotatedString {
-                    withStyle(style = Styles.ParamsStyle.paramsWhite){
-                        append(stringResource(id = R.string.card_name))
-                    }
-                    withStyle(style = Styles.DataStyle.dataWhite){
-                        append(cardSet.set_name)
-                    }
-                })
-                Text(buildAnnotatedString {
-                    withStyle(style = Styles.ParamsStyle.paramsWhite){
-                        append(stringResource(id = R.string.card_code))
-                    }
-                    withStyle(style = Styles.DataStyle.dataWhite){
-                        append(cardSet.set_code)
-                    }
-                })
-                Text(buildAnnotatedString {
-                    withStyle(style = Styles.ParamsStyle.paramsWhite){
-                        append(stringResource(id = R.string.card_numbers))
-                    }
-                    withStyle(style = Styles.DataStyle.dataWhite){
-                        append(cardSet.num_of_cards.toString())
-                    }
-                })
-
-                if (showButton){
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // Agregar el botón
-                    if (!buttonPressed) {
-                        ButtonToAdd(onClickButton = {
-                            buttonPressed = true
-                            onAddToFavoritesClicked(cardSet)
-                        })
-                    } else {
-                        TextFromButtonClick()
-                    }
-                }
             }
         }
     }
+
 
     @Composable
     fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites)){

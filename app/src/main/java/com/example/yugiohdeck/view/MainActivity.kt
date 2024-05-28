@@ -1,5 +1,6 @@
 package com.example.yugiohdeck.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,15 +12,20 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
@@ -103,7 +109,7 @@ fun MainScreen(
                 val imageUrl = cardSets.set_image
                 val painter = rememberAsyncImagePainter(model = imageUrl)
                 if (imageUrl != null)
-                    Components().CardViewInfo(painter = painter, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
+                    Components().CardViewInfo(painter = painter, color = Color.Black, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
                         favoriteList.add(it)
                         // Insertar el elemento seleccionado en la base de datos en un hilo secundario
                         CoroutineScope(Dispatchers.IO).launch {
@@ -117,6 +123,24 @@ fun MainScreen(
         }
     }
 }
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Preview(showBackground = true)
+@Composable
+fun ViewTopbar(){
+    Scaffold {
+        LazyRow(
+
+        ) {
+            item {
+                Components().FloatingButton(icon = Icons.Filled.Star, color = Color.White, text = "Agregar a favoritos") {
+                    
+                }
+            }
+        }
+    }
+}
+
 
 
 

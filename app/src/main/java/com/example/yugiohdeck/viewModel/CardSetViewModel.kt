@@ -3,17 +3,14 @@ package com.example.yugiohdeck.viewModel
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.yugiohdeck.viewModel.client.KtorClient
 import com.example.yugiohdeck.model.ResponseService
+import com.example.yugiohdeck.viewModel.client.KtorClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CardSetViewModel: ViewModel() {
