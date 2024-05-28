@@ -55,127 +55,127 @@ import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.ResponseService
 import com.example.yugiohdeck.view.FavoritesActivity
 
-class Components {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun SimpleTopBar(title: String,align: TextAlign = TextAlign.Center, fontWeight: FontWeight = FontWeight.Bold, color: Color = Color.Black,
-                     paddingStart: Dp = 3.dp, paddingEnd: Dp = 3.dp){
-        TopAppBar(title = {
-            Text(text = title,
-                textAlign = align,
-                modifier = Modifier.fillMaxWidth(),
-                fontWeight = fontWeight,
-                color = color
-            )
-        }, modifier = Modifier.fillMaxWidth()
-            .statusBarsPadding()
-            .padding(start = paddingStart, end = paddingEnd)
-            .shadow(elevation = 10.dp, shape = RectangleShape),
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimpleTopBar(title: String,align: TextAlign = TextAlign.Center, fontWeight: FontWeight = FontWeight.Bold, color: Color = Color.Black,
+                 paddingStart: Dp = 3.dp, paddingEnd: Dp = 3.dp){
+    TopAppBar(title = {
+        Text(text = title,
+            textAlign = align,
+            modifier = Modifier.fillMaxWidth(),
+            fontWeight = fontWeight,
+            color = color
         )
-    }
+    }, modifier = Modifier
+        .fillMaxWidth()
+        .statusBarsPadding()
+        .padding(start = paddingStart, end = paddingEnd)
+        .shadow(elevation = 10.dp, shape = RectangleShape),
+    )
+}
 
-    @Composable
-    fun FloatingButton(icon: ImageVector, text: String = "", contentDescription: String? = null,color: Color = Color.Black, onClick: () -> Unit) {
-        ExtendedFloatingActionButton(
-            onClick = onClick,
-            icon = { Icon(imageVector = icon, contentDescription = contentDescription) },
-            text = { Text(text) },
-            containerColor = color
-        )
-    }
+@Composable
+fun FloatingButton(icon: ImageVector, text: String = "", contentDescription: String? = null,color: Color = Color.Black, onClick: () -> Unit) {
+    ExtendedFloatingActionButton(
+        onClick = onClick,
+        icon = { Icon(imageVector = icon, contentDescription = contentDescription) },
+        text = { Text(text) },
+        containerColor = color
+    )
+}
 
-    @Composable
-    fun CardViewInfo(
-        color: Color = BlueDarkColor,
-        painter: AsyncImagePainter,
-        cardSet: ResponseService,
-        showButton: Boolean = false,
-        onAddToFavoritesClicked: (ResponseService) -> Unit
+@Composable
+fun CardViewInfo(
+    color: Color = BlueDarkColor,
+    painter: AsyncImagePainter,
+    cardSet: ResponseService,
+    showButton: Boolean = false,
+    textAfterClickButton: String = stringResource(id = R.string.selected_to_favorites),
+    onAddToFavoritesClicked: (ResponseService) -> Unit
+) {
+    var buttonPressed by remember { mutableStateOf(false) }
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = color)
     ) {
-        var buttonPressed by remember { mutableStateOf(false) }
-        Card(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = color)
+        Row(
+            modifier = Modifier.padding(16.dp),
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp) // Separar las columnas un poco
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp) // Separar las columnas un poco
-                ) {
-                    Text(buildAnnotatedString {
-                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
-                            append(stringResource(id = R.string.card_name))
-                        }
-                        withStyle(style = Styles.DataStyle.dataWhite) {
-                            append(cardSet.set_name)
-                        }
-                    })
-                    Text(buildAnnotatedString {
-                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
-                            append(stringResource(id = R.string.card_code))
-                        }
-                        withStyle(style = Styles.DataStyle.dataWhite) {
-                            append(cardSet.set_code)
-                        }
-                    })
-                    Text(buildAnnotatedString {
-                        withStyle(style = Styles.ParamsStyle.paramsWhite) {
-                            append(stringResource(id = R.string.card_numbers))
-                        }
-                        withStyle(style = Styles.DataStyle.dataWhite) {
-                            append(cardSet.num_of_cards.toString())
-                        }
-                    })
+                Text(buildAnnotatedString {
+                    withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                        append(stringResource(id = R.string.card_name))
+                    }
+                    withStyle(style = Styles.DataStyle.dataWhite) {
+                        append(cardSet.set_name)
+                    }
+                })
+                Text(buildAnnotatedString {
+                    withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                        append(stringResource(id = R.string.card_code))
+                    }
+                    withStyle(style = Styles.DataStyle.dataWhite) {
+                        append(cardSet.set_code)
+                    }
+                })
+                Text(buildAnnotatedString {
+                    withStyle(style = Styles.ParamsStyle.paramsWhite) {
+                        append(stringResource(id = R.string.card_numbers))
+                    }
+                    withStyle(style = Styles.DataStyle.dataWhite) {
+                        append(cardSet.num_of_cards.toString())
+                    }
+                })
 
-                    if (showButton) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        if (!buttonPressed) {
-                            ButtonToAdd(onClickButton = {
-                                buttonPressed = true
-                                onAddToFavoritesClicked(cardSet)
-                            })
-                        } else {
-                            TextFromButtonClick()
-                        }
+                if (showButton) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (!buttonPressed) {
+                        ButtonToAdd(onClickButton = {
+                            buttonPressed = true
+                            onAddToFavoritesClicked(cardSet)
+                        })
+                    } else {
+                        TextFromButtonClick(text = textAfterClickButton)
                     }
                 }
-
-                Image(
-                    painter = painter,
-                    contentDescription = "Set Image",
-                    modifier = Modifier
-                        .height(200.dp)
-                        .width(200.dp)
-                        .weight(1f),
-                    contentScale = ContentScale.Fit,
-                    alignment = Alignment.Center
-                )
             }
+
+            Image(
+                painter = painter,
+                contentDescription = "Set Image",
+                modifier = Modifier
+                    .height(200.dp)
+                    .width(200.dp)
+                    .weight(1f),
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.Center
+            )
         }
     }
+}
 
 
-    @Composable
-    fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites)){
-        Button(
-            onClick = onClickButton,
-        ) {
-            Text(text = text)
-        }
+@Composable
+fun ButtonToAdd(onClickButton: () -> Unit, text: String = stringResource(id = R.string.select_to_favorites)){
+    Button(
+        onClick = onClickButton,
+    ) {
+        Text(text = text)
     }
+}
 
-    @Composable
-    fun TextFromButtonClick(text: String = stringResource(id = R.string.selected_to_favorites)){
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.CheckCircle, contentDescription = text, tint = Color.White)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = text, color = Color.White)
-        }
+@Composable
+fun TextFromButtonClick(text: String = stringResource(id = R.string.selected_to_favorites)){
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Default.CheckCircle, contentDescription = text, tint = Color.White)
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(text = text, color = Color.White)
     }
 }

@@ -32,7 +32,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.yugiohdeck.R
 import com.example.yugiohdeck.model.Data
 import com.example.yugiohdeck.model.ResponseService
-import com.example.yugiohdeck.view.ui.theme.Components
+import com.example.yugiohdeck.view.ui.theme.CardViewInfo
+import com.example.yugiohdeck.view.ui.theme.FloatingButton
+import com.example.yugiohdeck.view.ui.theme.SimpleTopBar
 import com.example.yugiohdeck.viewModel.CardSetViewModel
 import com.example.yugiohdeck.viewModel.CardsDatabase
 import com.example.yugiohdeck.viewModel.DataDao
@@ -91,10 +93,10 @@ fun MainScreen(
     val favoriteList: MutableList<ResponseService> = mutableListOf()
     Scaffold(
         topBar = {
-            Components().SimpleTopBar(title = stringResource(id = R.string.title_topbar_main), color = Color.Red)
+            SimpleTopBar(title = stringResource(id = R.string.title_topbar_main), color = Color.Red)
         },
         floatingActionButton = {
-            Components().FloatingButton(icon = Icons.Filled.Star, text = stringResource(id = R.string.title_button_favorites), color = Color.Yellow, onClick = {
+            FloatingButton(icon = Icons.Filled.Star, text = stringResource(id = R.string.title_button_favorites), color = Color.Yellow, onClick = {
                 val intent = Intent(context, FavoritesActivity::class.java)
                 context.startActivity(intent)
             })
@@ -109,7 +111,7 @@ fun MainScreen(
                 val imageUrl = cardSets.set_image
                 val painter = rememberAsyncImagePainter(model = imageUrl)
                 if (imageUrl != null)
-                    Components().CardViewInfo(painter = painter, color = Color.Black, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
+                    CardViewInfo(painter = painter, color = Color.Black, cardSet = cardSets,showButton = true, onAddToFavoritesClicked = {
                         favoriteList.add(it)
                         // Insertar el elemento seleccionado en la base de datos en un hilo secundario
                         CoroutineScope(Dispatchers.IO).launch {
@@ -133,8 +135,7 @@ fun ViewTopbar(){
 
         ) {
             item {
-                Components().FloatingButton(icon = Icons.Filled.Star, color = Color.White, text = "Agregar a favoritos") {
-                    
+                FloatingButton(icon = Icons.Filled.Star, color = Color.White, text = "Agregar a favoritos") {
                 }
             }
         }
